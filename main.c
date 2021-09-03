@@ -1,85 +1,83 @@
 #include<stdio.h>
+#include<stdlib.h>
 
 
-void draw_board(int grid[3][3]);
-char get_char(int input);
+void draw_board(void);
+char *read_line(void);
+int display_menu(void);
+void get_user_move(void);
+void get_computer_move(int player);
+
+// 0 stands for default, 1 stands for O, 2 stands for X
+int board[3][3];
 
 int main() {
-
-	// 0 stands for default, 1 stands for O, 2 stands for X
-	int grid[3][3];
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 3; j++) {
-			grid[i][j] = 0;
-		}
-	}
+        int player = display_menu();
 	while(1) {
-		draw_board(grid);
-		getchar();
-//		get_input(grid);
-//		make_a_move(grid);
+                check_for_win(player);
+                get_user_move();
+                get_computer_move(player);
+                draw_board();
 	}
 	return 0;
 }
 
-char **get_input(char *input) {
-    char **command = malloc(8 * sizeof(char *));
-    if (command == NULL) {
-            perror("malloc failed");
-            exit(1);
-    }
-    char *separator = " ";
-    char *parsed;
-    int index = 0;
-
-    parsed = strtok(input, separator);
-    while (parsed != NULL) {
-        command[index] = parsed;
-        index++;
-
-        parsed = strtok(NULL, separator);
-    }
-
-    command[index] = NULL;
-    return command;
+void check_for_win(int player) {
+        int row, col;
+        int count = 0;
+       
 }
 
-char* read_line(void) {
-        int bufsize = 2;
-        int pos = 0;
-        char* buffer = malloc(sizeof(char) * bufsize);
-        int c;
-
-        if (!buffer) {
-                printf("error!");
-                exit(EXIT_FAILURE);
+int display_menu() {
+    printf("Welcome to Tic Tac Toe, please choose a side: 0 for O, 1 for X\n");
+    while (1) {
+        char* user_input = read_line();
+        if (user_input[0] == '0' || user_input[0] == '1') {
+                int result = user_input[0] - '0';
+                return result;
         }
+        printf("Invalid input, please try again\n");
+    }
+}
 
-        while (1) {
-                c = getchar();
+char *read_line(void)
+{
+  int bufsize = 2;
+  int position = 0;
+  char *buffer = malloc(sizeof(char) * bufsize);
+  int c;
 
-                if (c == EOF || c == '\n') {
-                        buffer[pos] = '\0';
-                        return buffer;
-                } else {
-                        buffer[pos] = c;
-                }
-                pos++;
+    if (!buffer) {
+            printf("allocation error\n");
+            exit(EXIT_FAILURE);
+    }
 
-                // if buffer is overflowing, reallocate
-                if (pos >= bufsize) {
-                        bufsize += SHELL_BUFF_SIZE;
-                        buffer = realloc(buffer, bufsize);
-                        if (!buffer) {
-                                fprintf(stderr, "cshell: allocation error\n");
-                                exit(EXIT_FAILURE);
-                        }
-                }
-        }
+  while (1) {
+    c = getchar();
+
+    // If we hit EOF, replace it with a null character and return.
+    if (c == EOF || c == '\n') {
+      buffer[position] = '\0';
+      return buffer;
+    } else {
+      buffer[position] = c;
+    }
+    position++;
+
+    // If we have exceeded the buffer, reallocate.
+    if (position >= bufsize) {
+      bufsize = bufsize*2;
+      buffer = realloc(buffer, bufsize);
+      if (!buffer) {
+        printf("reallocation error\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+  }
 }
 
 
-void draw_board(int grid[3][3]) {
+void draw_board(void) {
 	for (int i = 0; i < 3; i++) {
 		char charay[3];
 	       for (int j = 0; j < 3; j++) {
